@@ -32,12 +32,6 @@ THEN I am prompted to select a member and a book, and a borrow record is created
 WHEN I choose to record a return  
 THEN I am prompted to select a borrow record, and the book is marked available again  
 
-## Mock-Up
-
-The following video shows an example of the application being used from the command line:
-
-[![A video thumbnail shows the command-line library management application with a play button overlaying the view.](./Assets/12-sql-library-video-thumbnail.png)](https://example.com/library-manager-demo)
-
 ## Getting Started
 
 You’ll need to use the [MySQL2 package](https://www.npmjs.com/package/mysql2) to connect to your MySQL database and perform queries, the [Inquirer package](https://www.npmjs.com/package/inquirer) to interact with the user via the command line, and the [console.table package](https://www.npmjs.com/package/console.table) to print MySQL rows to the console.
