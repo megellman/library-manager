@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@dotenvx/dotenvx": "^1.51.0"
+    "@dotenvx/dotenvx": "^1.51.0",
+    "console.table": "^0.10.0"
   }
 }
