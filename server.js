@@ -1,4 +1,12 @@
 const inquirer = require('inquirer');
+const mysql = require('mysql2/promise');
+require('@dotenvx/dotenvx').config();
+
+mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD
+})
 
 inquirer
     .prompt([
@@ -52,3 +60,13 @@ inquirer
             when: (answers) => answers.options === 'record a return'
         }
     ])
+    .then((answers) => {
+
+    })
+    .catch((error) => {
+        if(error){
+            console.error(error);
+        } else {
+            console.log('Success')
+        }
+    })
