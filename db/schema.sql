@@ -8,7 +8,7 @@ CREATE TABLE book(
     title VARCHAR(100),
     author VARCHAR(50),
     year INT,
-    available BOOLEAN
+    available BOOLEAN DEFAULT 1
 );
 
 CREATE TABLE member(
@@ -21,7 +21,7 @@ CREATE TABLE borrow_record(
     id INT AUTO_INCREMENT PRIMARY KEY,
     book_id INT,
     member_id INT,
-    borrow_date DATE,
+    borrow_date TIMESTAMP DEFAULT NOW(),
     due_date DATE,
     return_date DATE,
     FOREIGN KEY (book_id) REFERENCES book(id),

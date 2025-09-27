@@ -13,108 +13,67 @@ const pool = mysql.createPool({
 const optionAnswer = await select({
     message: 'What would you like to do?',
     choices: [
-        {value: 'view all books', name: 'view all books'}, {value: 'view all members', name: 'view all members'}, {value: 'view all borrow records', name: 'view all borrow records'}, {value: 'add a book', name: 'add a book'}, {value: 'add a member', name: 'add a member'}, {value: 'record a borrowing', name: 'record a borrowing'}, {value: 'record a return', name: 'record a return'}]
+        { value: 'view all books', name: 'view all books' }, { value: 'view all members', name: 'view all members' }, { value: 'view all borrow records', name: 'view all borrow records' }, { value: 'add a book', name: 'add a book' }, { value: 'add a member', name: 'add a member' }, { value: 'record a borrowing', name: 'record a borrowing' }, { value: 'record a return', name: 'record a return' }]
 });
 
-if(optionAnswer)
-
-inquirer
-    .prompt([
-        {
-            type: 'list',
-            name: 'options',
-            message: 'What would you like to do?',
-            choices: ['view all books', 'view all members', 'view all borrow records', 'add a book', 'add a member', 'record a borrowing', 'record a return']
-        }, {
-            type: 'input',
-            name: 'bookTitle',
-            message: 'Please enter the title of the book',
-            when: (answers) => answers.options === 'add a book',
-        }, {
-            type: 'input',
-            name: 'bookAuthor',
-            message: 'Please enter the author of the book',
-            when: (answers) => answers.options === 'add a book',
-        }, {
-            type: 'input',
-            name: 'bookPublicationYear',
-            message: 'Please enter the publication year of the book',
-            when: (answers) => answers.options === 'add a book',
-        }, {
-            type: 'input',
-            name: 'memberName',
-            message: 'Please enter the member\'s name',
-            when: (answers) => answers.options === 'add a member',
-        }, {
-            type: 'input',
-            name: 'memberContactInfo',
-            message: 'Please enter the member\'s contact info',
-            when: (answers) => answers.options === 'add a member',
-        }, {
-            type: 'list',
-            name: 'borrowBookSelectMember',
-            message: 'Who is borrowing the book?',
-            choices: getMembers(),
-            when: (answers) => answers.options === 'record a borrowing',
-        }, {
-            type: 'list',
-            name: 'borrowBookSelectBook',
-            message: 'What book are they borrowing?',
-            choices: getBooks(),
-            when: (answers) => answers.options === 'record a borrowing',
-        }, {
-            type: 'list',
-            name: 'returnBook',
-            message: 'Select a borrow record.',
-            choices: getRecords(),
-            when: (answers) => answers.options === 'record a return'
-        }
-    ])
-    .then(async (answers) => {
-        if (answers.options === 'add a book') {
-            try {
-                const [rows, fields] = await pool.execute('INSERT INTO book VALUES ?', [answers.bookTitle, answers.bookAuthor, answers.bookPublicationYear]);
-                console.log([rows, fields]);
-                console.table('Book Added', [rows, fields]);
-            } catch (err) {
-                console.error(err);
-            }
-        } if (answers.options === 'add a member') {
-            try {
-                const [rows, fields] = await pool.execute('INSERT INTO member VALUES ?', [answers.memberName, answers.memberContactInfo]);
-                console.table('Member Added', [rows, fields]);
-            } catch (err) {
-                console.error(err);
-            }
-        } if (answers.options === 'record a borrowing') {
-            try {
-                const [rows, fields] = await pool.execute('INSERT INTO borrow_record VALUES ?', [borrowBookSelectMember, answers.borrowBookSelectBook])
-            } catch (err) {
-                console.error(err);
-            }
-        }
-    })
-    .catch((error) => {
-        if (error) {
-            console.error(error);
-        } else {
-            console.log('Success')
-        }
-    })
-
-async function getMembers() {
-    try {
-        const [rows, fields] = await pool.execute('SELECT * FROM member');
-        return [rows, fields];
-    } catch (error) {
-        console.log(error);
+if (optionAnswer === 'view all books') {
+    const [rows] = await pool.execute('SELECT * FROM book');
+    console.table(rows);
+} else if (optionAnswer === 'view all members') {
+    const [rows] = await pool.execute('SELECT * FROM member');
+    console.table(rows);
+} else if (optionAnswer === 'view all borrow records') {
+    const [rows] = await pool.execute('SELECT * FROM borrow_record');
+    console.table(rows);
+} else if (optionAnswer === 'add a book') {
+    const book = {
+        title: await input({ message: 'Please enter the book title.' }),
+        author: await input({ message: 'Please enter the book author.' }),
+        publicationYear: await input({ message: 'Please enter the book publication year.' })
     }
-}
+    const addedBook = await pool.execute('INSERT INTO book (title, author, year) VALUES (?, ?, ?)', [book.title, book.author, book.publicationYear]);
+    console.log('Book added: ', answers);
+} else if (optionAnswer === 'add a member') {
+    const member = {
+        name: await input({ message: 'Please enter their name.' }),
+        contact: await input({ message: 'Please enter their contact information.' })
+    };
+    const addedMember = await pool.execute('INSERT INTO member (name, contact) VALUES (?, ?)', [member.name, member.contact]);
+    console.log('Member added: ', member);
+} else if (optionAnswer === 'record a borrowing') {
+    async function getBooks() {
+        const [rows] = await pool.execute('SELECT * FROM book');
+        return rows;
+    }
+    const books = await getBooks();
+    async function getMembers() {
+        const [rows] = await pool.execute('SELECT * FROM member');
+        return rows;
+    }
+    const members = await getMembers();
 
-function getBooks() {
-    console.log('hello world');
-}
+    const book = await select({
+        message: 'What book is being borrowed?',
+        choices: books.map(book => ({
+            name: book.title + ' by ' + book.author,
+            value: book.id
+        }))
+    });
+    const member = await select({
+        message: "Who is borrowing the book?",
+        choices: members.map(member => ({
+            name: member.name,
+            value: member.id
+        }))
+    });
 
-function getRecords() {
-    console.log('hello world');
+    let now = new Date();
+    let due = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
+    let dueDate = due.toISOString().split('T')[0];
+
+    const borrowRecord = await pool.execute('INSERT INTO borrow_record (book_id, member_id, due_date) VALUES (?, ?, ?)', [book, member, dueDate]);
+    const [rows] = await pool.execute('SELECT book_id, member_id, borrow_date, due_date FROM borrow_record WHERE book_id = ? AND member_id = ?', [book, member])
+    console.table(rows);
+} else if (optionAnswer === 'record a return') {
+
 }
