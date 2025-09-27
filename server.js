@@ -1,4 +1,4 @@
-import inquirer from 'inquirer';
+import { input, select } from '@inquirer/prompts';
 import mysql from 'mysql2/promise';
 import dotenvx from '@dotenvx/dotenvx';
 dotenvx.config();
@@ -9,6 +9,14 @@ const pool = mysql.createPool({
     password: process.env.DB_PASSWORD,
     database: 'library_db',
 });
+
+const optionAnswer = await select({
+    message: 'What would you like to do?',
+    choices: [
+        {value: 'view all books', name: 'view all books'}, {value: 'view all members', name: 'view all members'}, {value: 'view all borrow records', name: 'view all borrow records'}, {value: 'add a book', name: 'add a book'}, {value: 'add a member', name: 'add a member'}, {value: 'record a borrowing', name: 'record a borrowing'}, {value: 'record a return', name: 'record a return'}]
+});
+
+if(optionAnswer)
 
 inquirer
     .prompt([
@@ -62,24 +70,25 @@ inquirer
             when: (answers) => answers.options === 'record a return'
         }
     ])
-    .then(async(answers) => {
-        if(answers.options === 'add a book') {
+    .then(async (answers) => {
+        if (answers.options === 'add a book') {
             try {
                 const [rows, fields] = await pool.execute('INSERT INTO book VALUES ?', [answers.bookTitle, answers.bookAuthor, answers.bookPublicationYear]);
+                console.log([rows, fields]);
                 console.table('Book Added', [rows, fields]);
-            } catch(err) {
+            } catch (err) {
                 console.error(err);
             }
-        } if(answers.options === 'add a member'){
+        } if (answers.options === 'add a member') {
             try {
                 const [rows, fields] = await pool.execute('INSERT INTO member VALUES ?', [answers.memberName, answers.memberContactInfo]);
                 console.table('Member Added', [rows, fields]);
             } catch (err) {
                 console.error(err);
             }
-        } if(answers.options === 'record a borrowing'){
+        } if (answers.options === 'record a borrowing') {
             try {
-                const [rows, fields] = await pool.execute('INSERT INTO borrow_record VALUES ?', [borrowBookSelectMember ,answers.borrowBookSelectBook])
+                const [rows, fields] = await pool.execute('INSERT INTO borrow_record VALUES ?', [borrowBookSelectMember, answers.borrowBookSelectBook])
             } catch (err) {
                 console.error(err);
             }
@@ -93,11 +102,19 @@ inquirer
         }
     })
 
-    async function getMembers(){
-        try {
-            const [rows, fields] = await pool.execute('SELECT * FROM member');
-            return [rows, fields];
-        } catch (error) {
-            console.log(error);
-        }
+async function getMembers() {
+    try {
+        const [rows, fields] = await pool.execute('SELECT * FROM member');
+        return [rows, fields];
+    } catch (error) {
+        console.log(error);
     }
+}
+
+function getBooks() {
+    console.log('hello world');
+}
+
+function getRecords() {
+    console.log('hello world');
+}
