@@ -75,5 +75,21 @@ if (optionAnswer === 'view all books') {
     const [rows] = await pool.execute('SELECT book_id, member_id, borrow_date, due_date FROM borrow_record WHERE book_id = ? AND member_id = ?', [book, member])
     console.table(rows);
 } else if (optionAnswer === 'record a return') {
+    async function getRecords(){
+        const [rows] = await pool.execute('SELECT * FROM borrow_record');
+        return rows;
+    }
+    const borrowRecords = await getRecords();
 
+    const bookReturn = await select({
+        message: "Select a borrow record to submit a return for.",
+        choices: borrowRecords.map(record => ({
+            name: record.book_id + record.member_id + record.borrow_date + record.due_date,
+            value: record.book_id + record.member_id + record.borrow_date + record.due_date
+        }))
+    });
+
+    const logReturn = await pool.execute('UPDATE borrow_record SET return_date = NOW() WHERE book_id = ? AND member_id = ?', [bookReturn.book_id, bookReturn.member_id]);
+    const [rows] = await pool.execute('SELECT book_id, member_id, borrow_date, due_date, return_date FROM borrow_record WHERE book_id = ? AND member_id = ?', [bookReturn.book_id, bookReturn.member_id]);
+    console.table(rows);
 }
