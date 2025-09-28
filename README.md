@@ -1,72 +1,48 @@
-# 12 SQL: Library Manager
+# SQL Library Manager
 
-## Your Task
+## Table of Contents
+- [SQL Library Manager](#sql-library-manager)
+  - [Table of Contents](#table-of-contents)
+  - [Technology Used](#technology-used)
+  - [Description](#description)
+  - [Usage](#usage)
+  - [Bonus](#bonus)
+  - [Author Info](#author-info)
+    - [Megan Ellman](#megan-ellman)
+  - [License](#license)
 
-Libraries often need simple systems for tracking books, members, and borrowing records. Your assignment this week is to build a command-line application from scratch to manage a library’s inventory and member activity, using Node.js, Inquirer, and MySQL.
+<br />
 
-Because this application won’t be deployed, you’ll also need to create a walkthrough video that demonstrates its functionality and all of the following acceptance criteria being met. You’ll need to submit a link to the video and add it to the README of your project.
+## Technology Used
 
-## User Story
+| Technology Used         | Resource URL           | 
+| ------------- |:-------------:| 
+| Node.js | [https://nodejs.org/en/](https://nodejs.org/en/) |
+| Inquirer | [https://www.npmjs.com/package/inquirer](https://www.npmjs.com/package/inquirer) |
+| MySQL | [https://www.mysql.com/](https://www.mysql.com/) |
+| MySQL2 | [https://www.npmjs.com/package/mysql2](https://www.npmjs.com/package/mysql2) |
+| console.table | [https://www.npmjs.com/package/console.table](https://www.npmjs.com/package/console.table) |
+| dotenvx | [https://www.npmjs.com/package/@dotenvx/dotenvx](https://www.npmjs.com/package/@dotenvx/dotenvx) |
 
-AS A librarian  
-I WANT to be able to view and manage the books, members, and borrowing records in my library  
-SO THAT I can keep track of my collection and who has borrowed what  
+<br />
 
-## Acceptance Criteria
+## Description 
 
-GIVEN a command-line application that accepts user input  
-WHEN I start the application  
-THEN I am presented with the following options: view all books, view all members, view all borrow records, add a book, add a member, record a borrowing, record a return  
-WHEN I choose to view all books  
-THEN I am presented with a formatted table showing book ids, titles, authors, and availability  
-WHEN I choose to view all members  
-THEN I am presented with a formatted table showing member ids, names, and contact information  
-WHEN I choose to view all borrow records  
-THEN I am presented with a formatted table showing which member borrowed which book and the due date  
-WHEN I choose to add a book  
-THEN I am prompted to enter the title, author, and publication year and that book is added to the database  
-WHEN I choose to add a member  
-THEN I am prompted to enter the member’s name and contact info and that member is added to the database  
-WHEN I choose to record a borrowing  
-THEN I am prompted to select a member and a book, and a borrow record is created with a due date, marking the book as unavailable  
-WHEN I choose to record a return  
-THEN I am prompted to select a borrow record, and the book is marked available again  
+SQL Library Manager is a command-line application built with Node.js, Inquirer, and MySQL. It allows librarians to manage books, members, and borrowing records directly from the terminal. Users can view and update the library’s inventory, manage members, record borrowings and returns, and view reports.
 
-## Getting Started
+This project was built to practice designing relational database schemas, using SQL joins, and implementing interactive CLI applications with Node.js. It provides a practical foundation for handling persistent data outside of web applications.
 
-You’ll need to use the [MySQL2 package](https://www.npmjs.com/package/mysql2) to connect to your MySQL database and perform queries, the [Inquirer package](https://www.npmjs.com/package/inquirer) to interact with the user via the command line, and the [console.table package](https://www.npmjs.com/package/console.table) to print MySQL rows to the console.
+<br />
 
-**Important**: You will be committing a file that contains your database credentials. Make sure that your MySQL password is not used for any other personal accounts, because it will be visible on GitHub. In upcoming lessons, you will learn how to better secure this password, or you can start researching npm packages now that could help you.
+## Usage 
 
-You might also want to make your queries asynchronous. MySQL2 exposes a `.promise()` function on Connections to upgrade an existing non-Promise connection to use Promises. To learn more and make your queries asynchronous, refer to the [npm documentation on MySQL2](https://www.npmjs.com/package/mysql2).
+Use the interactive menu to:
 
-Design the database schema as shown in the following image:
+- View all books, members, and borrow records.
+- Add books and members.
+- Record borrowings with auto-generated due dates.
+- Record book returns.
 
-![Database schema includes tables labeled “book,” “member,” and “borrow_record.”](./Assets/12-sql-library-schema.png)
-
-As the image illustrates, your schema should contain the following three tables:
-
-* `book`  
-    * `id`: `INT PRIMARY KEY`  
-    * `title`: `VARCHAR(100)` to hold book title  
-    * `author`: `VARCHAR(50)` to hold book author  
-    * `year`: `INT` to hold year of publication  
-    * `available`: `BOOLEAN` to show if the book is available  
-
-* `member`  
-    * `id`: `INT PRIMARY KEY`  
-    * `name`: `VARCHAR(50)` to hold member name  
-    * `contact`: `VARCHAR(50)` to hold member contact info  
-
-* `borrow_record`  
-    * `id`: `INT PRIMARY KEY`  
-    * `book_id`: `INT` to reference the borrowed book  
-    * `member_id`: `INT` to reference the borrowing member  
-    * `borrow_date`: `DATE` to hold date borrowed  
-    * `due_date`: `DATE` to hold due date  
-    * `return_date`: `DATE` to hold date returned (nullable)  
-
-You might want to use a separate file that contains functions for performing specific SQL queries you'll need to use. A constructor function or class could be helpful for organizing these. You might also want to include a `seeds.sql` file to pre-populate your database, making the development of individual features much easier.
 
 ## Bonus
 
@@ -77,3 +53,16 @@ Try to add some additional functionality to your application, such as the abilit
 * Delete members or books.  
 * Update member contact info.  
 * Generate a report of most borrowed books.  
+
+## Author Info
+
+### Megan Ellman
+[![portfolio](https://img.shields.io/badge/my_portfolio-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://megellman.github.io/portfolio/)
+[![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/megan-ellman/)
+[![github](https://img.shields.io/badge/GitHub-%23121011.svg?logo=github&logoColor=white)](https://github.com/megellman)
+
+<br />
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
