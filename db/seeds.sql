@@ -24,3 +24,6 @@ VALUES
 ('Hannah Davis', '555-890-1234'),
 ('Isaac Newton', '555-901-2345'),
 ('Julia Roberts', '555-012-3456');
+
+
+    SELECT columns FROM book UNION ALL SELECT columns FROM member UNION ALL SELECT columns FROM borrow_record
