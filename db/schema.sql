@@ -27,3 +27,11 @@ CREATE TABLE borrow_record(
     FOREIGN KEY (book_id) REFERENCES book(id),
     FOREIGN KEY (member_id) REFERENCES member(id)
 );
+
+SELECT book.id AS book_id, book.title, book.author, borrow_record.borrow_date, borrow_record.due_date, member.id AS member_id, member.name 
+FROM book 
+INNER JOIN borrow_record 
+ON book.id = borrow_record.book_id 
+LEFT JOIN member 
+ON borrow_record.member_id = member.id
+WHERE return_date IS NULL

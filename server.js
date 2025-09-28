@@ -46,15 +46,7 @@ while (running) {
         const addedMember = await pool.execute('INSERT INTO member (name, contact) VALUES (?, ?)', [member.name, member.contact]);
         console.log('Member added: ', member);
     } else if (optionAnswer === 'record a borrowing') {
-        async function getBooks() {
-            const [rows] = await pool.execute('SELECT * FROM book');
-            return rows;
-        }
         const books = await getBooks();
-        async function getMembers() {
-            const [rows] = await pool.execute('SELECT * FROM member');
-            return rows;
-        }
         const members = await getMembers();
 
         const book = await select({
@@ -82,24 +74,34 @@ while (running) {
         console.table(rows);
     } else if (optionAnswer === 'record a return') {
         async function getRecords() {
-            const [rows] = await pool.execute('SELECT * FROM borrow_record WHERE return_date IS NULL');
+            const [rows] = await pool.execute('SELECT book.id AS book_id, book.title, book.author, borrow_record.id AS record_id, borrow_record.borrow_date, borrow_record.due_date, member.id AS member_id, member.name FROM book INNER JOIN borrow_record ON book.id = borrow_record.book_id LEFT JOIN member ON borrow_record.member_id = member.id WHERE return_date IS NULL')
+
             return rows;
         }
         const borrowRecords = await getRecords();
 
-        console.log(borrowRecords);
-
         const bookReturn = await select({
             message: "Select a borrow record to submit a return for.",
             choices: borrowRecords.map(record => ({
-                name: record.book_id + record.member_id + record.borrow_date + record.due_date,
+                name: 'book: ' + record.title + ' | ' + 'member: ' + record.name,
                 value: record
             }))
         });
 
         const logReturn = await pool.execute('UPDATE borrow_record SET return_date = NOW() WHERE book_id = ? AND member_id = ?', [bookReturn.book_id, bookReturn.member_id]);
-        const [rows] = await pool.execute('SELECT book_id, member_id, borrow_date, due_date, return_date FROM borrow_record WHERE book_id = ? AND member_id = ?', [bookReturn.book_id, bookReturn.member_id]);
+
+        const [rows] = await pool.execute('SELECT book.title, book.author, borrow_record.borrow_date, borrow_record.return_date, member.name FROM book INNER JOIN borrow_record ON book.id = borrow_record.book_id LEFT JOIN member ON borrow_record.member_id = member.id WHERE borrow_record.id = ?', [borrowRecords[0].record_id]);
+
         console.log('Book returned');
         console.table(rows);
     }
+}
+
+async function getMembers() {
+    const [rows] = await pool.execute('SELECT * FROM member');
+    return rows;
+}
+async function getBooks() {
+    const [rows] = await pool.execute('SELECT * FROM book');
+    return rows;
 }
